@@ -25,7 +25,7 @@ poly[0:rows, 0:cols] = dst
 cv2.imshow("mask", mask)
 cv2.imshow("poly_bg", poly_bg)
 #cv2.imshow("icon_fg", icon_fg)
-# cv2.imshow("dst", dst)
+cv2.imshow("dst", dst)
 
 
 cv2.waitKey(5500)

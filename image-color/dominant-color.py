@@ -43,11 +43,11 @@ for i in range(len(COLORS)):
     # soma o "tamanho" da mascara ao array de ocorrências
     color_occurrence[i] += np.count_nonzero(mask)
 
-    '''
+    """
     cv.imshow("Máscara: {}".format(COLOR_NAMES[i]), mask)
     cv.waitKey(0)
     cv.destroyAllWindows()
-    '''
+    """
 
 
 total_colors = np.sum(color_occurrence)
