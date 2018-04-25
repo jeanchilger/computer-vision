@@ -23,7 +23,7 @@ while True:
     img[:] = [r, g, b]
 
     k = cv2.waitKey(1) & 0xFF
-    if k == 27:
+    if k == 27: # esc
         break
 
 cv2.destroyAllWindows()

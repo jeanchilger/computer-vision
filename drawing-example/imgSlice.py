@@ -18,7 +18,7 @@ img = img[:, :, ::-1]
 
 
 rect1 = img[205:215, 333:307]
-print img[0:20]
+# print img[0:20]
 #img[100:150, 200:250] = rect1
 
 cv.imshow("image", img)
