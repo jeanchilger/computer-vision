@@ -1,18 +1,12 @@
-# -*- coding: utf-8 -*-
-
 import numpy as np
 import cv2 as cv
 import sys
 from matplotlib import pyplot as plt
-
-path = sys.argv[1]
-# carrega a imagem e a converte para HSV
-image = np.array(cv.imread(path))
-hsv_image = cv.cvtColor(image, cv.COLOR_BGR2HSV)
+import img_proc
 
 # array contendo os intervalos HSV de algumas cores
-COLORS = np.array([[[0,100,100], [9,255,255]], # vermelho
-                   [[10,100,100], [23,255,255]], # laranjado
+COLORS = np.array([[[0,100,100], [8,255,255]], # vermelho
+                   [[9,100,100], [23,255,255]], # laranjado
                    [[24,100,100], [35,255,255]], # amarelo
                    [[36,100,100], [80,255,255]], # verde
                    [[81,100,100], [92,255,255]], # ciano
@@ -25,7 +19,7 @@ COLORS = np.array([[[0,100,100], [9,255,255]], # vermelho
                    np.uint8)
 
 # cores para mostrar na paleta
-COLORS_OUT = np.array([[1,255,250], # vermelho
+COLORS_OUT = np.array([[0,255,255], # vermelho
                        [10,255,250], # laranjado
                        [27,255,240], # amarelo
                        [60,255,200], # verde
@@ -44,92 +38,140 @@ COLOR_NAMES = ["Vermelho", "Laranjado", "Amarelo",
                "Verde", "Ciano", "Azul", "Roxo",
                "Magenta", "Preto", "Cinza", "Branco"]
 
-# array para armazenar a ocorrência de cada cor
-color_occurrence = np.zeros(len(COLORS), np.uint32)
-color_percent = np.zeros(len(COLORS), np.uint32)
+
+# objeto para representar a imagem
+class Image:
+
+    def __init__(self, path):
+
+        # carrega a imagem
+        self.__src = np.array(cv.imread(path))
+        # converte a imagem para HSV
+        self.hsv_image = cv.cvtColor(self.__src, cv.COLOR_BGR2HSV)
+        # converte a imagem para RGB
+        self.rgb_image = cv.cvtColor(self.hsv_image, cv.COLOR_HSV2RGB)
+
+        # arrays para armazenar a frequência das cores (absoluta e relativa)
+        self.color_occurrence = np.zeros(len(COLORS), np.uint32)
+        self.color_percentage = np.zeros(len(COLORS), np.uint32)
+
+        self.calculate_occurrence()
+        self.calculate_percentage()
+
+    # calcula a ocorrência de cada cor
+    def calculate_occurrence(self):
+
+        # verifica cada uma das cores
+        for i in range(len(COLORS)):
+
+            # verifica a imagem com base nos intervalos de cores definidos e retorna uma máscara
+            # a parte branca da máscara indica a presença da cor verificada
+            mask = cv.inRange(self.hsv_image, COLORS[i][0], COLORS[i][1])
+
+            # soma o "tamanho" da mascara ao array de ocorrências
+            self.color_occurrence[i] += np.count_nonzero(mask)
+
+            # exemplo de mascara
+            '''
+            cv.imshow("Máscara: {}".format(COLOR_NAMES[i]), mask)
+            cv.waitKey(0)
+            cv.destroyAllWindows()
+            '''
+
+    # calcula o percentual aproximado de ocorrência de cada cor
+    def calculate_percentage(self):
+        # pega o numero de ocorrencias para calcular o percentual
+        total_colors = np.sum(self.color_occurrence)
+
+        for i in range(len(self.color_occurrence)):
+            self.color_percentage[i] = round((self.color_occurrence[i] * 100.0 / total_colors))
+
+def create_palette(percentage_array):
+    # matriz para representar a "paleta de cores" da imagem
+    rect = np.full((25,300,3), 70)
+
+    # variavel para armazenar a "posicao" das colunas da matriz
+    it = 0
+
+    # constroi a matriz para representar a paleta de cores
+    for p in range(len(percentage_array)):
+
+        # 25 linhas (25px de altura)
+        for i in range(25):
+
+            # as linhas são construidas com base na porcentagem das cores (100*3px de largura)
+            for j in range(percentage_array[p]*3):
+
+                # adiciona uma cor a um pixel
+                rect[i][j+it] = COLORS_OUT[p]
+
+        # local (da coluna) por onde começar o próximo loop
+        it += percentage_array[p]*3
+
+    # converte o retângulo criado para o formato RGB
+    res_hsv = np.uint8(rect)
+    res = cv.cvtColor(res_hsv, cv.COLOR_HSV2RGB)
+
+    return res
+
+def get_real_dominant_color():
+    pass
+
+# função para plotar imagens
+def plot_img(subplot, img):
+    plt.subplot(subplot)
+    plt.imshow(img)
+    plt.axis("off")
+
+# função para plotar texto
+def plot_txt(subplot, percentage_array):
+    plt.subplot(subplot)
+    # posição inicial do texto no eixo y
+    y_pos = 1
+    # decremento, com base no total de valores a serem mostrados
+    decrement = 1.0/11
+
+    for i in range(len(percentage_array)):
+        plt.text(0, y_pos, "{}: {} %".format(COLOR_NAMES[i], percentage_array[i]))
+        y_pos -= decrement
+
+    plt.axis("off")
 
 
-# itera sobre cada cor para que sejam analizadas uma a uma
-for i in range(len(COLORS)):
+if __name__ == "__main__":
+    # pega o nome da imagem passado como argumento pelo terminal
+    path = sys.argv[1]
+    # cria uma representação da imagem contida em path
+    img = Image(path)
+    # cria uma paleta com as cores predominantes da imagem
+    palette = create_palette(img.color_percentage)
 
-    # verifica a imagem com base nos intervalos ja definidos, retornando
-    # uma mascara onde a parte branca indica a ocorrência da cor predeterminada
-    mask = cv.inRange(hsv_image, COLORS[i][0], COLORS[i][1])
-    # soma o "tamanho" da mascara ao array de ocorrências
-    color_occurrence[i] += np.count_nonzero(mask)
+    '''
+    max_interval = COLORS[list(img.color_occurrence).index(max(img.color_occurrence))]
 
-    # exemplo da mascara
-    """
-    cv.imshow("Máscara: {}".format(COLOR_NAMES[i]), mask)
-    cv.waitKey(0)
-    cv.destroyAllWindows()
-    """
+    thread0 = img_proc.Preprocessor(img.hsv_image[0:50], max_interval[0], max_interval[1])
+    thread1 = img_proc.Preprocessor(img.hsv_image[50:100], max_interval[0], max_interval[1])
+    thread2 = img_proc.Preprocessor(img.hsv_image[100:150], max_interval[0], max_interval[1])
+    thread3 = img_proc.Preprocessor(img.hsv_image[150:200], max_interval[0], max_interval[1])
+    thread4 = img_proc.Preprocessor(img.hsv_image[200:250], max_interval[0], max_interval[1])
+    thread5 = img_proc.Preprocessor(img.hsv_image[250:], max_interval[0], max_interval[1])
+    thread0.start()
+    thread1.start()
+    thread2.start()
+    thread3.start()
+    thread4.start()
+    thread5.start()
+    '''
 
+    # mostra a imagem original se outro argumento for passado
+    if (len(sys.argv) > 2):
+        plot_img(111, img.rgb_image)
+        plt.show()
 
-
-# pega o numero de ocorrencias para calcular o percentual
-total_colors = np.sum(color_occurrence)
-
-# calcula o percentual aproximado de ocorrência de cada cor
-for i in range(len(color_occurrence)):
-    color_percent[i] = round((color_occurrence[i] * 100.0 / total_colors))
-
-
-# matriz para representar a "paleta de cores" da imagem
-rect = np.full((25,300,3), -70)
-
-# variavel para armazenar a "posicao" de insercao de valores nas colunas da matriz
-it = 0
-
-# constroi a matriz para representar a paleta de cores
-for p in range(len(color_percent)):
-
-    # 25 linhas (25px de altura)
-    for i in range(25):
-
-        # as linhas são construidas com base na porcentagem das cores
-        for j in range(color_percent[p]*3):
-
-            # adiciona uma cor a um pixel
-            rect[i][j+it] = COLORS_OUT[p]
-
-    it += color_percent[p]*3
-
-# converte a matriz para o formato uint8 que para que possa ser convertida em RGB
-res_hsv = np.uint8(rect)
-res = cv.cvtColor(res_hsv, cv.COLOR_HSV2RGB)
-# converte a imagem original de BGR para RGB
-b, g, r = cv.split(image)
-image = cv.merge((r, g, b))
-
-# mostra a imagem original em uma janela separada
-'''
-plt.imshow(image)
-plt.axis("off")
-plt.show()
-'''
-
-# plota a paleta de cores
-plt.subplot(818)
-plt.imshow(res)
-plt.axis("off")
-
-# plota a imagem original
-plt.subplot(221)
-plt.imshow(image)
-plt.axis("off")
-
-plt.subplot(222)
-# posição do texto no eixo y
-y_pos = 1
-# decremento, com base no total de valores a serem mostrados
-decrement = 1.0/11
-
-for c in range(len(color_percent)):
-    plt.text(0, y_pos, "{}: {} %".format(COLOR_NAMES[c], color_percent[c]))
-    y_pos -= decrement
-
-plt.axis("off")
-
-# mostra tudo
-plt.show()
+    # configura o fundo do pyplot como cinza
+    plt.style.use("grayscale")
+    # plotagens
+    plot_img(818, palette)
+    plot_img(221, img.rgb_image)
+    plot_txt(222, img.color_percentage)
+    plt.show()
