@@ -2,12 +2,11 @@ import numpy as np
 import cv2 as cv
 import sys
 from matplotlib import pyplot as plt
-import img_proc
 
 # array contendo os intervalos HSV de algumas cores
-COLORS = np.array([[[0,100,100], [8,255,255]], # vermelho
-                   [[9,100,100], [23,255,255]], # laranjado
-                   [[24,100,100], [35,255,255]], # amarelo
+COLORS = np.array([[[0,100,100], [7,255,255]], # vermelho
+                   [[8,100,100], [22,255,255]], # laranjado
+                   [[23,100,100], [35,255,255]], # amarelo
                    [[36,100,100], [80,255,255]], # verde
                    [[81,100,100], [92,255,255]], # ciano
                    [[93,100,100], [130,255,255]], # azul
@@ -145,23 +144,6 @@ if __name__ == "__main__":
     img = Image(path)
     # cria uma paleta com as cores predominantes da imagem
     palette = create_palette(img.color_percentage)
-
-    '''
-    max_interval = COLORS[list(img.color_occurrence).index(max(img.color_occurrence))]
-
-    thread0 = img_proc.Preprocessor(img.hsv_image[0:50], max_interval[0], max_interval[1])
-    thread1 = img_proc.Preprocessor(img.hsv_image[50:100], max_interval[0], max_interval[1])
-    thread2 = img_proc.Preprocessor(img.hsv_image[100:150], max_interval[0], max_interval[1])
-    thread3 = img_proc.Preprocessor(img.hsv_image[150:200], max_interval[0], max_interval[1])
-    thread4 = img_proc.Preprocessor(img.hsv_image[200:250], max_interval[0], max_interval[1])
-    thread5 = img_proc.Preprocessor(img.hsv_image[250:], max_interval[0], max_interval[1])
-    thread0.start()
-    thread1.start()
-    thread2.start()
-    thread3.start()
-    thread4.start()
-    thread5.start()
-    '''
 
     # mostra a imagem original se outro argumento for passado
     if (len(sys.argv) > 2):
