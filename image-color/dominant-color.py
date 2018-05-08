@@ -113,9 +113,6 @@ def create_palette(percentage_array):
 
     return res
 
-def get_real_dominant_color():
-    pass
-
 # função para plotar imagens
 def plot_img(subplot, img):
     plt.subplot(subplot)
