@@ -54,11 +54,11 @@ class Image:
         self.color_occurrence = np.zeros(len(COLORS), np.uint32)
         self.color_percentage = np.zeros(len(COLORS), np.uint32)
 
-        self.calculate_occurrence()
-        self.calculate_percentage()
+        self._calculate_occurrence()
+        self._calculate_percentage()
 
     # calcula a ocorrência de cada cor
-    def calculate_occurrence(self):
+    def _calculate_occurrence(self):
 
         # verifica cada uma das cores
         for i in range(len(COLORS)):
@@ -78,7 +78,7 @@ class Image:
             '''
 
     # calcula o percentual aproximado de ocorrência de cada cor
-    def calculate_percentage(self):
+    def _calculate_percentage(self):
         # pega o numero de ocorrencias para calcular o percentual
         total_colors = np.sum(self.color_occurrence)
 
