@@ -12,7 +12,6 @@ def plot_img(*content):
         try:
             ready_img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
         except:
-            print(txt)
             ready_img = img[:, :, ::-1]
         pyplot.axis("off")
         pyplot.imshow(ready_img)

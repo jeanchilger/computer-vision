@@ -34,15 +34,36 @@ eroded_img = cv2.erode(mask, kernel, iterations=1)
 # realiza a dilatação da imagem
 dilated_img = cv2.dilate(mask, kernel, iterations=1)
 
+# # aplica a erosão e depois a dilatação
+# er_di_img = cv2.dilate(cv2.erode(mask, kernel, iterations=1),
+#                        kernel, iterations=1)
+#
+# # aplica a dilatação e depois a erosão
+# di_er_img = cv2.erode(cv2.dilate(mask, kernel, iterations=1),
+#                        kernel, iterations=1)
+
 # erosão seguida de uma dilatação
 er_di_img = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
 
 # dilatação seguida de uma erosão
 di_er_img = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
 
-plot_img([src_img, "Original"], [mask, "Binarizada"], [eroded_img, "Erosão"],
-         [dilated_img, "Dilatação"], [er_di_img, "Erosão e depois Dilatação"],
-         [di_er_img, "Dilatação e depois Erosão"])
+# organiza as imagens e os textos para serem exibidos
+imgs = [src_img, mask, eroded_img, dilated_img, er_di_img, di_er_img]
+txts = ["Original", "Binarizada", "Erosão", "Dilatação",
+        "Erosão e depois Dilatação", "Dilatação e depois Erosão"]
+
+plot_img(*zip(imgs, txts))
+
+# res_set = np.vstack([
+#     np.hstack([gray_img, mask]),
+#     np.hstack([eroded_img, dilated_img]),
+#     np.hstack([er_di_img, di_er_img]),
+# ])
+
+# cv2.imshow("title", res_set)
+# cv2.waitKey(0)
+# cv2.destroyAllWindows()
 
 pyplot.show()
 
