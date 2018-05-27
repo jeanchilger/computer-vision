@@ -3,6 +3,10 @@ import numpy as np
 from matplotlib import pyplot
 
 def plot_img(*content):
+    """
+    usage: *zip(array_of_images, array_of_titles)
+    set the images and the texts at the pyplot to be shown later
+    """
     # configura o espaçamento dos subplots
     pyplot.subplots_adjust(bottom=0, top=.97, left=0, right=1, wspace=.06, hspace=.06)
     # calcula a quantidade dos subplots

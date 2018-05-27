@@ -2,6 +2,8 @@ import cv2
 from matplotlib import pyplot
 import numpy as np
 import sys
+
+sys.path.insert(0, "../")
 from utiltools import plot_img
 
 # pega o caminho da imagem por meio de um parâmetro do terminal
