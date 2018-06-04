@@ -113,9 +113,9 @@ class ImagePr:
             convolved.append([])
             for j in range(0, self.shape[1] - self._k_size, self._stride):
                 convolved.append([
-                    (self._kernel * self.src[i:i+self._k_size, j:j+self._k_size, 0]).sum(),
-                    (self._kernel * self.src[i:i+self._k_size, j:j+self._k_size, 1]).sum(),
-                    (self._kernel * self.src[i:i+self._k_size, j:j+self._k_size, 2]).sum()
+                    sum(self._kernel * self.src[i:i+self._k_size, j:j+self._k_size, 0]),
+                    sum(self._kernel * self.src[i:i+self._k_size, j:j+self._k_size, 1]),
+                    sum(self._kernel * self.src[i:i+self._k_size, j:j+self._k_size, 2])
                 ])
                 # # r
                 # convolved[i, j, 0] = (self._kernel * self._img[i:i+self._k_size,
