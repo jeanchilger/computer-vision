@@ -1,7 +1,7 @@
 import cv2 as cv
 import numpy as np
 
-class Image:
+class ImagePr:
     """
     Objeto para representar uma imagem.
     Responsável por abrir, (pré)processar e salvar uma imagem.
@@ -19,9 +19,13 @@ class Image:
         self._stride = stride
 
         self._gray_convolved = None
-        self._bgr_convolved = None
+        self._rgb_convolved = None
 
-    # configura os getters para as propriedades _convolved
+    # configura os getters para alguns atributos
+    @property
+    def src(self):
+        return self._img[:, :, ::-1]
+
     @property
     def gray_convolved(self):
         if not self._gray_convolved:
@@ -30,15 +34,15 @@ class Image:
         return self._gray_convolved
 
     @property
-    def bgr_convolved(self):
-        if not self._bgr_convolved:
-            self._bgr_convolved = self.bgr_convolution()
+    def rgb_convolved(self):
+        if not self._rgb_convolved:
+            self._rgb_convolved = self.rgb_convolution()
 
-        return self._bgr_convolved
+        return self._rgb_convolved
 
     def _preproc(self):
         self._resize()
-        self._pad()
+        # self._pad()
 
     def _resize(self, width=400):
         """
@@ -84,35 +88,46 @@ class Image:
         aplica a convolução na imagem em tons de cinza
         """
         gray_img = cv.cvtColor(self._img, cv.COLOR_BGR2GRAY)
-        convolved = np.zeros(gray_img.shape)
+        convolved = []
         # percorre cada pixel da imagem
         for i in range(0, self.shape[0] - self._k_size, self._stride):
+            convolved.append([])
             for j in range(0, self.shape[1] - self._k_size, self._stride):
                 # jeito fácil:
-                convolved[i, j] = (self._kernel * gray_img[i:i+self._k_size,
-                                                           j:j+self._k_size]).sum()
+                convolved[i].append((self._kernel * gray_img[i:i+self._k_size,
+                                                           j:j+self._k_size]).sum())
                 # jeito nem tão fácil
                 # convolved[i, j] = self._convolve_sub(gray_img[i:i+self._k_size, j:j+self._k_size])
 
         return np.array(convolved, dtype=np.uint8)
 
-    def bgr_convolution(self):
+    def rgb_convolution(self):
         """
-        aplica a convolução na imagem com os tres canais: b, g, r
+        aplica a convolução na imagem com os tres canais: r, g, b
         """
-        convolved = np.zeros(self.shape)
+        convolved = []
+        # convolved = np.zeros(self.shape)
+        # convolved = self.src
         # percorre cada pixel da imagem
         for i in range(0, self.shape[0] - self._k_size, self._stride):
+            convolved.append([])
             for j in range(0, self.shape[1] - self._k_size, self._stride):
-                # b
-                convolved[i, j, 0] = (self._kernel * self._img[i:i+self._k_size,
-                                                              j:j+self._k_size, 0]).sum()
-                # g
-                convolved[i, j, 1] = (self._kernel * self._img[i:i+self._k_size,
-                                                              j:j+self._k_size, 1]).sum()
-                # r
-                convolved[i, j, 2] = (self._kernel * self._img[i:i+self._k_size,
-                                                              j:j+self._k_size, 2]).sum()
+                convolved.append([
+                    (self._kernel * self.src[i:i+self._k_size, j:j+self._k_size, 0]).sum(),
+                    (self._kernel * self.src[i:i+self._k_size, j:j+self._k_size, 1]).sum(),
+                    (self._kernel * self.src[i:i+self._k_size, j:j+self._k_size, 2]).sum()
+                ])
+                # # r
+                # convolved[i, j, 0] = (self._kernel * self._img[i:i+self._k_size,
+                #                                                j:j+self._k_size, 2]).sum()
+                #
+                # # g
+                # convolved[i, j, 1] = (self._kernel * self._img[i:i+self._k_size,
+                #                                                j:j+self._k_size, 1]).sum()
+                #
+                # # b
+                # convolved[i, j, 2] = (self._kernel * self._img[i:i+self._k_size,
+                #                                                j:j+self._k_size, 0]).sum()
 
         return np.array(convolved, dtype=np.uint8)
 

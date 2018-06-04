@@ -1,6 +1,7 @@
 import cv2
+from image import ImagePr
+from matplotlib import pyplot as plt
 import numpy as np
-from image import Image
 # from scipy import ndimage
 import sys
 
@@ -20,14 +21,21 @@ with open(filter_name, "r") as filter_file:
 kernel = np.array(kernel, dtype=np.float_)
 
 # cria uma imagem
-img = Image(img_path, kernel, stride)
+img = ImagePr(img_path, kernel, stride)
 
 # convolução do scipy
 # convolved = ndimage.convolve(img._img, kernel, mode="constant", cval=0.0)
 
-cv2.imshow("Convolution Example", img.gray_convolved)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+def plot_img(subplot, img):
+    plt.subplot(subplot)
+    plt.axis("off")
+    plt.imshow(img)
+
+
+plot_img(221, img.src)
+plot_img(222, img.rgb_convolved)
+
+plt.show()
 
 # salva a imagem
 file_name = "results/convolution_" + filter_name.split(".")[0] + "_" + img_path
