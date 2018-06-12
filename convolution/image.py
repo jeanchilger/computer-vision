@@ -44,7 +44,7 @@ class ImagePr:
 
     def _preproc(self):
         self._resize()
-        self._pad()
+        # self._pad()
 
     def _resize(self, width=400):
         """
@@ -66,6 +66,14 @@ class ImagePr:
         padding[1:self._img.shape[0]+1, 1:self._img.shape[1]+1] = self._img
         self._img = padding
 
+    def convert_value(sub_mtrx):
+        for i in range(len(sub_mtrx)):
+            for j in range(len(i)):
+                sub_mtrx[i][j] = max(0, min(255, sub_mtrx[i][j]))
+
+        print(sub_mtrx)
+        return "break"
+
     def gray_convolution(self):
         """
         aplica a convolução na imagem em tons de cinza
@@ -80,8 +88,8 @@ class ImagePr:
 
             for j in range(0, self.shape[1] - self._k_size, self._stride):
 
-                convolved[index].append((self._kernel * self.src_gray[i:i+self._k_size,
-                                                                  j:j+self._k_size]).sum())
+                convolved[index].append(max(0, min(255, (self._kernel * self.src_gray[i:i+self._k_size,
+                                                                                      j:j+self._k_size]).sum())))
 
         return np.array(convolved, dtype=np.uint8)
 
@@ -99,9 +107,9 @@ class ImagePr:
             for j in range(0, self.shape[1] - self._k_size, self._stride):
 
                 convolved[index].append([
-                    (self._kernel * self.src[i:i+self._k_size, j:j+self._k_size, 2]).sum(),
-                    (self._kernel * self.src[i:i+self._k_size, j:j+self._k_size, 1]).sum(),
-                    (self._kernel * self.src[i:i+self._k_size, j:j+self._k_size, 0]).sum()
+                    max(0, min(255, ((self._kernel * self.src[i:i+self._k_size, j:j+self._k_size, 2]).sum()))),
+                    max(0, min(255, ((self._kernel * self.src[i:i+self._k_size, j:j+self._k_size, 1]).sum()))),
+                    max(0, min(255, ((self._kernel * self.src[i:i+self._k_size, j:j+self._k_size, 0]).sum())))
                 ])
 
 
