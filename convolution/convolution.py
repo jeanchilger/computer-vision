@@ -2,7 +2,6 @@ import cv2
 from image import ImagePr
 from matplotlib import pyplot as plt
 import numpy as np
-# from scipy import ndimage
 import sys
 
 # pega os parametros passados por meio do terminal
