@@ -1,3 +1,5 @@
+//g++ main.cpp `pkg-config --cflags --libs opencv` -std=c++11
+
 #include <iostream>
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
@@ -25,10 +27,11 @@ char BLUR[2][5] = {
 };
 
 struct MatWrapper {
-    cv::Mat back;
-    cv::Mat src;
-    cv::Mat mask;
-    cv::Mat maskSrc;
+    cv::Mat back; // backup of the original gray image;
+    cv::Mat src; // the source that will be used to apply the morph;
+    cv::Mat maskSrc; // the mask where the adaptiveThreshold is applied;
+    cv::Mat mask; // the mask like maskSrc but with borders;
+    cv::Mat res; // the final answer, just to save image;
 };
 
 // #define CV_RGB(r, g, b) cv::Scalar((b), (g), (r), 0)
@@ -88,6 +91,8 @@ void showImg(void * data){
 
     }
 
+    ((MatWrapper*)data)->res = res;
+
     displayText(res, morphType, kernelShape, kernelSize, blurState);
     cv::imshow("Morpho Something", res);
 }
@@ -102,7 +107,7 @@ static void onTrackbar(int val, void* data) {
 void applyMask(void * data) {
 
     cv::adaptiveThreshold(((MatWrapper*)data)->src, ((MatWrapper*)data)->maskSrc, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C,
-                          cv::THRESH_BINARY, 115, 1);
+                          cv::THRESH_BINARY, 21, 2);
 
     cv::copyMakeBorder(((MatWrapper*)data)->src, grayImage, 30, 30, 0, 0,
                        cv::BORDER_CONSTANT, cv::Scalar(0));
@@ -116,7 +121,7 @@ static void onBlur(int val, void* data) {
 
     if (val) {
         cv::Mat img;
-        cv::GaussianBlur(((MatWrapper*)data)->src, img, cv::Size(3, 3), 0);
+        cv::GaussianBlur(((MatWrapper*)data)->src, img, cv::Size(5, 5), 0);
 
         ((MatWrapper*)data)->src = img.clone();
 
@@ -161,7 +166,7 @@ int main(int argc, char** argv) {
                       onTrackbar, data);
 
     // cria a trackbar para alterar o tipo de transformação
-    cv::createTrackbar("Morph Type", "Morpho Something", &trackPosC, 6,
+    cv::createTrackbar("Morph Type", "Morpho Something", &trackPosC, 7,
                        onTrackbar, data);
 
     // cria a trackbar para ativar/desativar o blur
@@ -171,7 +176,17 @@ int main(int argc, char** argv) {
     applyMask(data);
     displayGrayImg();
 
-    cv::waitKey(0);
+    int k;
+    while (true) {
+        k = cv::waitKey();
+        if (k == 115) {
+            cv::imwrite("image.png", MatSet.res);
+
+        } else if (k == 27) {
+            cv::destroyAllWindows();
+            break;
+        }
+    }
 
     return 0;
 }
