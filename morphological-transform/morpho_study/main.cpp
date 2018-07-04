@@ -1,4 +1,4 @@
-//g++ main.cpp `pkg-config --cflags --libs opencv` -std=c++11
+// g++ main.cpp `pkg-config --cflags --libs opencv` -std=c++11
 
 #include <iostream>
 #include <opencv2/highgui.hpp>
@@ -39,9 +39,8 @@ struct MatWrapper {
 
 cv::Mat grayImage;
 
-// adiciona um texto à tela
-// o texto descreverá as operações feitas na imagem
-void displayText(cv::Mat destImg, int mtId, int ksId, int ks, int blr) {
+// text on screen
+void makeText(cv::Mat destImg, int mtId, int ksId, int ks, int blr) {
 
     char outBottom[80];
     char outTop[80];
@@ -56,7 +55,7 @@ void displayText(cv::Mat destImg, int mtId, int ksId, int ks, int blr) {
 
 }
 
-// mostra a imagem cinza e seta todas as trackbars para o estado inicial
+// just show the original gray image
 void displayGrayImg() {
 
     // cv::setTrackbarPos("Kernel Size", "Morpho Something", 0);
@@ -68,9 +67,10 @@ void displayGrayImg() {
     cv::imshow("Morpho Something", grayImage);
 }
 
+// shows the image - with the proper operations applied
 void showImg(void * data){
 
-    // pega os valores das trackbars
+    // trackbars values
     int kernelSize = (int)cv::getTrackbarPos("Kernel Size", "Morpho Something") + 1;
     int kernelShape = (int)cv::getTrackbarPos("Kernel Shape", "Morpho Something");
     int morphType = (int)cv::getTrackbarPos("Morph Type", "Morpho Something") - 1;
@@ -86,7 +86,7 @@ void showImg(void * data){
         displayGrayImg();
         return;
 
-    // transformações morphológicas
+    // morphology
     } else {
         cv::morphologyEx(mask2, res, morphType, kernel);
 
@@ -94,17 +94,18 @@ void showImg(void * data){
 
     ((MatWrapper*)data)->res = res;
 
-    displayText(res, morphType, kernelShape, kernelSize, blurState);
+    makeText(res, morphType, kernelShape, kernelSize, blurState);
     cv::imshow("Morpho Something", res);
 }
 
-// altera as opções de imagem
+// gets the state of the trackbars
 static void onTrackbar(int val, void* data) {
 
     showImg(data);
 
 }
 
+// applies the threshold and create borders at the image
 void applyMask(void * data) {
 
     cv::adaptiveThreshold(((MatWrapper*)data)->src, ((MatWrapper*)data)->maskSrc, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C,
@@ -118,6 +119,7 @@ void applyMask(void * data) {
 
 }
 
+// apply the gaussian blur to an image
 static void onBlur(int val, void* data) {
 
     if (val) {
@@ -155,22 +157,22 @@ int main(int argc, char** argv) {
     MatSet.maskSrc = maskSrc;
 
     void * data = (void*)(&MatSet);
-    // cria a janela
+    // create the window
     cv::namedWindow("Morpho Something", cv::WINDOW_AUTOSIZE);
 
-    // cria a trackbar para alterar o tipo de kernel
+    // kernel type
     cv::createTrackbar("Kernel Shape", "Morpho Something", &trackPosA, 2,
                        onTrackbar, data);
 
-    // cria a trackbar para alterar o tamanho do kernel
+    // kernel size
     cv::createTrackbar("Kernel Size", "Morpho Something", &trackPosB, 5,
                       onTrackbar, data);
 
-    // cria a trackbar para alterar o tipo de transformação
+    // morphological transformation
     cv::createTrackbar("Morph Type", "Morpho Something", &trackPosC, 7,
                        onTrackbar, data);
 
-    // cria a trackbar para ativar/desativar o blur
+    // blur
     cv::createTrackbar("Blur State", "Morpho Something", &trackPosD, 1,
                        onBlur, data);
 
@@ -179,6 +181,7 @@ int main(int argc, char** argv) {
     displayGrayImg();
 
     int k;
+    // gets the user key
     while (true) {
         k = cv::waitKey();
         if (k == 115) {
