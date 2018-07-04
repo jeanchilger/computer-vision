@@ -5,6 +5,7 @@
 #include <opencv2/imgproc.hpp>
 #include <string>
 
+// matrixes with the labels
 char MORPH_TYPES[7][25] = {
     "Erosion",
     "Dilation",
@@ -31,7 +32,7 @@ struct MatWrapper {
     cv::Mat src; // the source that will be used to apply the morph;
     cv::Mat maskSrc; // the mask where the adaptiveThreshold is applied;
     cv::Mat mask; // the mask like maskSrc but with borders;
-    cv::Mat res; // the final answer, just to save image;
+    cv::Mat res; // the final answer, just to allow saving the image;
 };
 
 // #define CV_RGB(r, g, b) cv::Scalar((b), (g), (r), 0)
@@ -58,8 +59,8 @@ void displayText(cv::Mat destImg, int mtId, int ksId, int ks, int blr) {
 // mostra a imagem cinza e seta todas as trackbars para o estado inicial
 void displayGrayImg() {
 
-    cv::setTrackbarPos("Kernel Size", "Morpho Something", 0);
-    cv::setTrackbarPos("Kernel Shape", "Morpho Something", 0);
+    // cv::setTrackbarPos("Kernel Size", "Morpho Something", 0);
+    // cv::setTrackbarPos("Kernel Shape", "Morpho Something", 0);
 
     cv::putText(grayImage, "Original Grayscale Image", cv::Point(10,20), cv::FONT_HERSHEY_DUPLEX, 0.7,
                 cv::Scalar(200), 1, cv::LINE_AA);
@@ -174,6 +175,7 @@ int main(int argc, char** argv) {
                        onBlur, data);
 
     applyMask(data);
+    MatSet.res = grayImage;
     displayGrayImg();
 
     int k;
