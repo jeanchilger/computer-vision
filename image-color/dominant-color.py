@@ -45,6 +45,7 @@ class Image:
 
         # carrega a imagem
         self.__src = np.array(cv.imread(path))
+        print(self.__src)
         # converte a imagem para HSV
         self.hsv_image = cv.cvtColor(self.__src, cv.COLOR_BGR2HSV)
         # converte a imagem para RGB
