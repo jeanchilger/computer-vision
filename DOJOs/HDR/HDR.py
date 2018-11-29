@@ -37,7 +37,7 @@ alignMTB.process(images, images)
 print("Calibrando CRF")
 calibrateDevec = cv2.createCalibrateDebevec()
 responseDebevec = calibrateDevec.process(images, times)
-cv2.imwrite("images/hdrs.hdr", responseDebevec)
+cv2.imwrite("images/hdrs.xcf", responseDebevec)
 
 print("Unindo as  Imagens")
 mergeDebevec = cv2.createMergeDebevec()
