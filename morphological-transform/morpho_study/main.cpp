@@ -52,7 +52,6 @@ void makeText(cv::Mat destImg, int mtId, int ksId, int ks, int blr) {
 
     cv::putText(destImg, outBottom, cv::Point(10,destImg.rows-10), cv::FONT_HERSHEY_DUPLEX, 0.7,
                 cv::Scalar(200), 1, cv::LINE_AA);
-
 }
 
 // just show the original gray image
