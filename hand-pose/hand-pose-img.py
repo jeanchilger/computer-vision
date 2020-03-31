@@ -16,7 +16,7 @@ POSE_PAIRS = [
         [0,17],[17,18],[18,19],[19,20]
 ]
 
-frame = cv.imread("input/right-frontal.jpg")
+frame = cv.imread("input/front-back.jpg")
 
 frame_copy = np.copy(frame)
 
