@@ -10,7 +10,7 @@ Algorithms and theoretical material related to computer vision. Mostly of the ma
 * [face-swap](https://github.com/JeanCHilger/computer-vision/tree/master/face-swap): Face swap dojo, implemented in OpenCV.
 * [filters](https://github.com/JeanCHilger/computer-vision/tree/master/filters): Some filters implemented from scratch.
 * [green-area-detection](https://github.com/JeanCHilger/computer-vision/tree/master/green-area-detection): Green area detection implemented using OpenCV.
-* [hand-pose](https://github.com/JeanCHilger/computer-vision/tree/master/hand-pose):
+* [hand-pose](https://github.com/JeanCHilger/computer-vision/tree/master/hand-pose): Hand pose estimation using OpenCV `dnn` module.
 * [image-color](https://github.com/JeanCHilger/computer-vision/tree/master/image-color): Algorithm to detect the most predominant color in a image.
 * [morphological-transform](https://github.com/JeanCHilger/computer-vision/tree/master/morphological-transform): Implements an algorithm that performs several morphological transforms.
 * [seamless-cloning](https://github.com/JeanCHilger/computer-vision/tree/master/seamless-cloning): Seamless cloning of two images, implemented in OpenCV.

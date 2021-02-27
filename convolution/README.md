@@ -21,4 +21,5 @@ where <img src="https://render.githubusercontent.com/render/math?math=x'=x - (h 
 ## References
 
 [1] [Kernel (image processing)](https://en.wikipedia.org/wiki/Kernel_(image_processing)). Wikipedia.
+
 [2] [Image Kernels](https://setosa.io/ev/image-kernels/). Victor Powell.
